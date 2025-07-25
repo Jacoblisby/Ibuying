@@ -24,11 +24,15 @@ export default function Home() {
     ocrResults: []
   });
 
-  const handleInputChange = (e) => {
+  // RETTET! - korrekt type til e
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleFileUpload = async (files) => {
+  const handleFileUpload = async (files: FileList | null) => {
+    if (!files) return;
     const uploaded = Array.from(files);
     const results = uploaded.map((file) => ({
       fileName: file.name,
@@ -108,10 +112,14 @@ export default function Home() {
                   name="images"
                   type="file"
                   multiple
-                  onChange={(e) => setForm({ ...form, images: e.target.files })}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setForm({ ...form, images: e.target.files })
+                  }
                 />
               </Label>
-              <Button type="button" onClick={() => setStep(2)}>Næste trin</Button>
+              <Button type="button" onClick={() => setStep(2)}>
+                Næste trin
+              </Button>
             </form>
           )}
 
@@ -124,42 +132,80 @@ export default function Home() {
                   type="file"
                   multiple
                   accept="application/pdf"
-                  onChange={(e) => handleFileUpload(e.target.files)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    handleFileUpload(e.target.files)
+                  }
                 />
               </Label>
               <Label>
                 Fællesudgifter til E/F (kr./md.)
-                <Input name="sharedCosts" type="number" value={form.sharedCosts} onChange={handleInputChange} />
+                <Input
+                  name="sharedCosts"
+                  type="number"
+                  value={form.sharedCosts}
+                  onChange={handleInputChange}
+                />
               </Label>
               <Label>
                 Varme (kr./md.)
-                <Input name="heat" type="number" value={form.heat} onChange={handleInputChange} />
+                <Input
+                  name="heat"
+                  type="number"
+                  value={form.heat}
+                  onChange={handleInputChange}
+                />
               </Label>
               <Label>
                 Vand (kr./md.)
-                <Input name="water" type="number" value={form.water} onChange={handleInputChange} />
+                <Input
+                  name="water"
+                  type="number"
+                  value={form.water}
+                  onChange={handleInputChange}
+                />
               </Label>
               <Label>
                 Andre faste udgifter (kr./md.)
-                <Input name="otherCosts" type="number" value={form.otherCosts} onChange={handleInputChange} />
+                <Input
+                  name="otherCosts"
+                  type="number"
+                  value={form.otherCosts}
+                  onChange={handleInputChange}
+                />
               </Label>
               <div>
-                <p className="font-semibold">🔍 Automatisk dokumentanalyse (simuleret OCR):</p>
+                <p className="font-semibold">
+                  🔍 Automatisk dokumentanalyse (simuleret OCR):
+                </p>
                 <ul className="text-sm text-gray-700 list-disc ml-6">
                   {form.ocrResults.map((doc, idx) => (
-                    <li key={idx}><strong>{doc.fileName}:</strong> <pre>{doc.content}</pre></li>
+                    <li key={idx}>
+                      <strong>{doc.fileName}:</strong>{" "}
+                      <pre>{doc.content}</pre>
+                    </li>
                   ))}
                 </ul>
               </div>
-              <Button type="button" onClick={() => setStep(3)}>Næste trin</Button>
+              <Button type="button" onClick={() => setStep(3)}>
+                Næste trin
+              </Button>
             </form>
           )}
 
           {step === 3 && (
             <div className="space-y-4">
-              <p className="text-lg font-semibold">🔍 Vi analyserer dine oplysninger...</p>
-              <p className="text-gray-600">Markedsværdi og risikoniveau bliver beregnet...</p>
-              <Button type="button" onClick={() => alert("Bud genereret (placeholder)")}>Generér bud</Button>
+              <p className="text-lg font-semibold">
+                🔍 Vi analyserer dine oplysninger...
+              </p>
+              <p className="text-gray-600">
+                Markedsværdi og risikoniveau bliver beregnet...
+              </p>
+              <Button
+                type="button"
+                onClick={() => alert("Bud genereret (placeholder)")}
+              >
+                Generér bud
+              </Button>
             </div>
           )}
         </CardContent>
