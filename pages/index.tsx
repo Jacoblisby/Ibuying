@@ -1,115 +1,169 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
+// pages/index.tsx
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
 
 export default function Home() {
+  const [step, setStep] = useState(1);
+  const [form, setForm] = useState({
+    address: "",
+    type: "",
+    size: "",
+    rooms: "",
+    condition: "",
+    previouslyListed: "",
+    sharedCosts: "",
+    heat: "",
+    water: "",
+    otherCosts: "",
+    documents: [],
+    images: [],
+    ocrResults: []
+  });
+
+  const handleInputChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleFileUpload = async (files) => {
+    const uploaded = Array.from(files);
+    const results = uploaded.map((file) => ({
+      fileName: file.name,
+      content: `🔍 Automatisk udtræk af data fra ${file.name}\n- Fællesudgifter: 3.200 kr.\n- Ejendomsskat: 6.124 kr.`
+    }));
+    setForm((prev) => ({
+      ...prev,
+      documents: uploaded,
+      ocrResults: results
+    }));
+  };
+
   return (
-    <div
-      className={`${geistSans.className} ${geistMono.className} font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20`}
-    >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              pages/index.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+    <main className="max-w-4xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6">Få et kontant bud på din bolig</h1>
+      <Card>
+        <CardContent className="p-6">
+          {step === 1 && (
+            <form className="grid gap-4">
+              <Label>
+                Adresse
+                <Input name="address" value={form.address} onChange={handleInputChange} />
+              </Label>
+              <Label>
+                Boligtype
+                <select
+                  name="type"
+                  value={form.type}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded"
+                >
+                  <option value="">Vælg</option>
+                  <option value="ejerlejlighed">Ejerlejlighed</option>
+                  <option value="villa">Villa</option>
+                  <option value="rækkehus">Rækkehus</option>
+                </select>
+              </Label>
+              <Label>
+                Størrelse (m²)
+                <Input name="size" type="number" value={form.size} onChange={handleInputChange} />
+              </Label>
+              <Label>
+                Antal værelser
+                <Input name="rooms" type="number" value={form.rooms} onChange={handleInputChange} />
+              </Label>
+              <Label>
+                Stand
+                <select
+                  name="condition"
+                  value={form.condition}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded"
+                >
+                  <option value="">Vælg</option>
+                  <option value="dårlig">Dårlig</option>
+                  <option value="middel">Middel</option>
+                  <option value="god">God</option>
+                  <option value="nyrenoveret">Nyrenoveret</option>
+                </select>
+              </Label>
+              <Label>
+                Har boligen været til salg for nylig?
+                <select
+                  name="previouslyListed"
+                  value={form.previouslyListed}
+                  onChange={handleInputChange}
+                  className="border p-2 rounded"
+                >
+                  <option value="">Vælg</option>
+                  <option value="ja">Ja</option>
+                  <option value="nej">Nej</option>
+                </select>
+              </Label>
+              <Label>
+                Upload billeder (valgfrit)
+                <Input
+                  name="images"
+                  type="file"
+                  multiple
+                  onChange={(e) => setForm({ ...form, images: e.target.files })}
+                />
+              </Label>
+              <Button type="button" onClick={() => setStep(2)}>Næste trin</Button>
+            </form>
+          )}
+
+          {step === 2 && (
+            <form className="grid gap-4">
+              <Label>
+                Upload dokumenter (PDF)
+                <Input
+                  name="documents"
+                  type="file"
+                  multiple
+                  accept="application/pdf"
+                  onChange={(e) => handleFileUpload(e.target.files)}
+                />
+              </Label>
+              <Label>
+                Fællesudgifter til E/F (kr./md.)
+                <Input name="sharedCosts" type="number" value={form.sharedCosts} onChange={handleInputChange} />
+              </Label>
+              <Label>
+                Varme (kr./md.)
+                <Input name="heat" type="number" value={form.heat} onChange={handleInputChange} />
+              </Label>
+              <Label>
+                Vand (kr./md.)
+                <Input name="water" type="number" value={form.water} onChange={handleInputChange} />
+              </Label>
+              <Label>
+                Andre faste udgifter (kr./md.)
+                <Input name="otherCosts" type="number" value={form.otherCosts} onChange={handleInputChange} />
+              </Label>
+              <div>
+                <p className="font-semibold">🔍 Automatisk dokumentanalyse (simuleret OCR):</p>
+                <ul className="text-sm text-gray-700 list-disc ml-6">
+                  {form.ocrResults.map((doc, idx) => (
+                    <li key={idx}><strong>{doc.fileName}:</strong> <pre>{doc.content}</pre></li>
+                  ))}
+                </ul>
+              </div>
+              <Button type="button" onClick={() => setStep(3)}>Næste trin</Button>
+            </form>
+          )}
+
+          {step === 3 && (
+            <div className="space-y-4">
+              <p className="text-lg font-semibold">🔍 Vi analyserer dine oplysninger...</p>
+              <p className="text-gray-600">Markedsværdi og risikoniveau bliver beregnet...</p>
+              <Button type="button" onClick={() => alert("Bud genereret (placeholder)")}>Generér bud</Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </main>
   );
 }
